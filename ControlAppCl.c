@@ -1,4 +1,4 @@
-//gcc -o cl ControlAppCl.c -finput-charset=utf-8 -fexec-charset=cp932 -lws2_32 -lgdi32
+//gcc -o cl ControlAppCl.c -finput-charset=utf-8 -mwindows -fexec-charset=cp932 -lws2_32 -lgdi32
 
 #include <wchar.h>
 #include <winsock2.h>
@@ -44,7 +44,7 @@ unsigned __stdcall ReceiveThread(void* param) {
         
         server.sin_family = AF_INET;
         server.sin_port = htons(12345);
-        server.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+        server.sin_addr.S_un.S_addr = inet_addr("10.181.20.28");
         
         if (connect(sock, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
             closesocket(sock);
@@ -101,8 +101,8 @@ unsigned __stdcall SendThread(void* param) {
         }
         
         server.sin_family = AF_INET;
-        server.sin_port = htons(62455);
-        server.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+        server.sin_port = htons(12346);
+        server.sin_addr.S_un.S_addr = inet_addr("10.181.20.28");
         
         if (connect(sock, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR) {
             closesocket(sock);
