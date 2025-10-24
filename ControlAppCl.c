@@ -31,7 +31,21 @@ UINT g_currentFrame = 0;
 PropertyItem* g_pPropertyItem = NULL;
 ULONG_PTR g_gdiplusToken;
 
+// サブクラス用	
+WNDPROC g_oldEditProc = NULL;
+
 LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM IParam);
+
+// サブクラス用のウィンドウプロシージャ
+LRESULT CALLBACK EditSubclassProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {	
+if (uMsg == WM_CHAR && wParam == VK_RETURN) {	
+// エンターキーが押されたら送信ボタンをクリック	
+HWND hBtn = GetDlgItem(GetParent(hwnd), BUTTON1);	
+SendMessage(GetParent(hwnd), WM_COMMAND, MAKEWPARAM(BUTTON1, BN_CLICKED), (LPARAM)hBtn);	
+return 0;	
+}	
+return CallWindowProc(g_oldEditProc, hwnd, uMsg, wParam, lParam);	
+}
 
 // サーバーに接続して受信を待機するスレッド
 unsigned __stdcall ReceiveThread(void* param) {
@@ -308,6 +322,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM IParam){
                 "EDIT","",
                 WS_CHILD | WS_VISIBLE | ES_MULTILINE | WS_VSCROLL | ES_READONLY,
                 530,30,500,700,hwnd,(HMENU)EDIT3,hInstance,NULL);
+            
+            // 入力欄をサブクラス化してエンターキーを処理
+            g_oldEditProc = (WNDPROC)SetWindowLongPtr(hedt2, GWLP_WNDPROC, (LONG_PTR)EditSubclassProc);
             break;
             
         case WM_COMMAND:
